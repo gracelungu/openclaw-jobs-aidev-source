@@ -189,43 +189,45 @@ const Layout: React.FC<LayoutProps> = ({ currentRole, onSignOut }) => {
         </div>
 
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 z-[200] lg:hidden">
-            {/* Opaque Background Layer to prevent home text bleeding through */}
-            <div className="absolute inset-0 bg-background-dark" onClick={() => setIsMobileMenuOpen(false)} />
-            
-            <div className="absolute right-0 top-0 bottom-0 w-full max-w-xs bg-card-dark p-8 flex flex-col gap-8 shadow-2xl animate-in slide-in-from-right duration-300 border-l border-border-dark">
-               <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
-                      <span className="material-symbols-outlined text-sm">rocket_launch</span>
-                    </div>
-                    <span className="text-lg font-black tracking-tight text-white">Menu</span>
+          <div className="fixed inset-0 z-[300] lg:hidden isolate">
+            <div
+              className="absolute inset-0 bg-[#0b0b0f]/96 backdrop-blur-sm"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+
+            <div className="absolute right-0 top-0 bottom-0 z-[310] w-full max-w-xs bg-[#16161a] p-8 flex flex-col gap-8 shadow-2xl animate-in slide-in-from-right duration-300 border-l border-[#292348]">
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+                    <span className="material-symbols-outlined text-sm">rocket_launch</span>
                   </div>
-                  <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-slate-400 hover:text-white transition-colors">
-                    <span className="material-symbols-outlined text-2xl">close</span>
-                  </button>
-               </div>
-               
-               <nav className="flex flex-col gap-6 text-xl font-bold">
-                  <Link to="/tasks" className="hover:text-primary transition-colors flex items-center gap-4">
-                    <span className="material-symbols-outlined text-primary">explore</span> Marketplace
-                  </Link>
-                  <Link to="/agents" className="hover:text-primary transition-colors flex items-center gap-4">
-                    <span className="material-symbols-outlined text-primary">groups</span> Agents
-                  </Link>
-                  <Link to="/how-it-works" className="hover:text-primary transition-colors flex items-center gap-4">
-                    <span className="material-symbols-outlined text-primary">help</span> How it Works
-                  </Link>
-                  <div className="h-px bg-border-dark my-2" />
-                  {currentRole ? (
-                    <Link to="/dashboard" className="text-white bg-primary px-6 py-3 rounded-xl text-center shadow-lg shadow-primary/20">Dashboard</Link>
-                  ) : (
-                    <>
-                      <Link to="/signin" className="text-slate-400 hover:text-white transition-colors">Sign In</Link>
-                      <Link to="/signup" className="text-white bg-primary px-6 py-3 rounded-xl text-center shadow-lg shadow-primary/20">Sign Up</Link>
-                    </>
-                  )}
-               </nav>
+                  <span className="text-lg font-black tracking-tight text-white">Menu</span>
+                </div>
+                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-slate-400 hover:text-white transition-colors">
+                  <span className="material-symbols-outlined text-2xl">close</span>
+                </button>
+              </div>
+
+              <nav className="flex flex-col gap-6 text-xl font-bold">
+                <Link to="/tasks" className="hover:text-primary transition-colors flex items-center gap-4">
+                  <span className="material-symbols-outlined text-primary">explore</span> Marketplace
+                </Link>
+                <Link to="/agents" className="hover:text-primary transition-colors flex items-center gap-4">
+                  <span className="material-symbols-outlined text-primary">groups</span> Agents
+                </Link>
+                <Link to="/how-it-works" className="hover:text-primary transition-colors flex items-center gap-4">
+                  <span className="material-symbols-outlined text-primary">help</span> How it Works
+                </Link>
+                <div className="h-px bg-border-dark my-2" />
+                {currentRole ? (
+                  <Link to="/dashboard" className="text-white bg-primary px-6 py-3 rounded-xl text-center shadow-lg shadow-primary/20">Dashboard</Link>
+                ) : (
+                  <>
+                    <Link to="/signin" className="text-slate-400 hover:text-white transition-colors">Sign In</Link>
+                    <Link to="/signup" className="text-white bg-primary px-6 py-3 rounded-xl text-center shadow-lg shadow-primary/20">Sign Up</Link>
+                  </>
+                )}
+              </nav>
             </div>
           </div>
         )}
