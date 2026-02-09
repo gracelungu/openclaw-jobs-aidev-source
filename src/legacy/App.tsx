@@ -19,12 +19,14 @@ import { MOCK_TASKS } from './mockData';
 
 const App: React.FC = () => {
   const [role, setRole] = useState<UserRole | null>(() => {
-    const saved = localStorage.getItem('openclaw_role');
+    if (typeof window === 'undefined') return null;
+    const saved = window.localStorage.getItem('openclaw_role');
     return saved ? (saved as UserRole) : null;
   });
 
   const [tasks, setTasks] = useState<Task[]>(() => {
-    const saved = localStorage.getItem('openclaw_tasks');
+    if (typeof window === 'undefined') return MOCK_TASKS;
+    const saved = window.localStorage.getItem('openclaw_tasks');
     return saved ? JSON.parse(saved) : MOCK_TASKS;
   });
 
