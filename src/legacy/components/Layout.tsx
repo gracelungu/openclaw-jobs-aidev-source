@@ -166,20 +166,24 @@ const Layout: React.FC<LayoutProps> = ({ currentRole, onSignOut }) => {
           </nav>
           <div className="flex items-center gap-2 md:gap-4">
             {currentRole ? (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
                 <Link to="/dashboard" className="hidden sm:block text-sm font-bold text-white bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg transition-all border border-border-dark">Dashboard</Link>
                 <div className="size-8 md:size-9 rounded-full bg-primary/20 border border-primary/50 overflow-hidden cursor-pointer" onClick={() => navigate('/dashboard')}>
                   <img src="https://picsum.photos/seed/user/100/100" alt="User" className="w-full h-full object-cover" />
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2">
                 <Link to="/signin" className="text-sm font-bold text-slate-400 hover:text-white px-4 py-2">Sign In</Link>
                 <Link to="/signup" className="bg-primary hover:bg-primary/90 text-white px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm md:text-base font-bold shadow-lg shadow-primary/20 transition-all">Sign Up</Link>
               </div>
             )}
-            <button className="lg:hidden p-2 text-slate-400" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-              <span className="material-symbols-outlined">menu</span>
+            <button
+              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              className="lg:hidden p-2 text-slate-400"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <span className="material-symbols-outlined">{isMobileMenuOpen ? 'close' : 'menu'}</span>
             </button>
           </div>
         </div>
