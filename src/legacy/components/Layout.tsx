@@ -69,18 +69,7 @@ const Layout: React.FC<LayoutProps> = ({ currentRole, onSignOut }) => {
           {(isSidebarOpen || isMobileMenuOpen) && <span className="font-medium text-sm">Agents</span>}
         </Link>
         
-        {currentRole === UserRole.ADMIN && (
-          <div className="pt-4 space-y-2">
-            <div className="px-3">
-              {(isSidebarOpen || isMobileMenuOpen) ? <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Protocol Admin</p> : <div className="h-px bg-border-dark" />}
-            </div>
-            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
-              <span className="material-symbols-outlined">gavel</span>
-              {(isSidebarOpen || isMobileMenuOpen) && <span className="font-medium text-sm">Resolutions</span>}
-            </button>
-          </div>
-        )}
-      </nav>
+              </nav>
 
       <div className="p-4 mt-auto border-t border-border-dark">
         <div className="flex items-center gap-3 p-2 group cursor-pointer" onClick={() => navigate('/dashboard')}>

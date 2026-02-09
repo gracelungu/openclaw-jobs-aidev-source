@@ -10,10 +10,10 @@ interface AgentDashboardProps {
 const AgentDashboard: React.FC<AgentDashboardProps> = ({ tasks }) => {
   const navigate = useNavigate();
 
-  const myTasks = tasks.filter(t => t.assignedAgentId === 'a1' || (t.status === TaskStatus.ASSIGNED && t.id === '1025'));
-  
+  const myTasks = tasks.filter(t => t.assignedAgentId === 'a1');
+
   const totalEarnings = myTasks
-    .filter(t => t.status === TaskStatus.PAID || t.status === TaskStatus.APPROVED)
+    .filter(t => t.status === TaskStatus.APPROVED)
     .reduce((acc, t) => acc + t.budgetMax, 0);
 
   return (
@@ -23,9 +23,9 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ tasks }) => {
           <h1 className="text-2xl md:text-4xl font-black text-white tracking-tight truncate">Agent Node</h1>
           <p className="text-slate-500 text-xs md:text-sm mt-1 font-medium italic">Monitor active protocol contracts.</p>
         </div>
-        <button className="w-full md:w-auto bg-white text-background-dark hover:bg-primary hover:text-white transition-all font-black px-6 md:px-8 py-3 md:py-3.5 rounded-2xl flex items-center justify-center gap-2 shadow-2xl shadow-black/40 uppercase tracking-widest text-xs md:text-sm">
-          <span className="material-symbols-outlined text-lg">post_add</span>
-          New Service
+        <button onClick={() => navigate('/tasks')} className="w-full md:w-auto bg-white text-background-dark hover:bg-primary hover:text-white transition-all font-black px-6 md:px-8 py-3 md:py-3.5 rounded-2xl flex items-center justify-center gap-2 shadow-2xl shadow-black/40 uppercase tracking-widest text-xs md:text-sm">
+          <span className="material-symbols-outlined text-lg">explore</span>
+          Find Tasks
         </button>
       </div>
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
@@ -9,12 +8,11 @@ import AgentsMarketplace from './pages/AgentsMarketplace';
 import HowItWorks from './pages/HowItWorks';
 import CreatorDashboard from './pages/CreatorDashboard';
 import AgentDashboard from './pages/AgentDashboard';
-import AdminDashboard from './pages/AdminDashboard';
 import DeliveryReview from './pages/DeliveryReview';
 import CreateTask from './pages/CreateTask';
 import SignIn from './pages/SignIn';
 import Layout from './components/Layout';
-import { UserRole, Task, TaskStatus, EscrowStatus } from './types';
+import { UserRole, Task, TaskStatus, Bid } from './types';
 import { MOCK_TASKS } from './mockData';
 
 const App: React.FC = () => {
@@ -29,6 +27,8 @@ const App: React.FC = () => {
     const saved = window.localStorage.getItem('openclaw_tasks');
     return saved ? JSON.parse(saved) : MOCK_TASKS;
   });
+
+  const currentUserId = role === UserRole.AGENT ? 'a1' : 'h_demo';
 
   useEffect(() => {
     if (role) localStorage.setItem('openclaw_role', role);
@@ -56,32 +56,56 @@ const App: React.FC = () => {
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updates } : t));
   };
 
+  const placeBid = (taskId: string, bid: Bid) => {
+    setTasks(prev => prev.map(t => {
+      if (t.id !== taskId || t.assignedAgentId) return t;
+      const bids = [...t.bids, bid];
+      return { ...t, bids, applicantsCount: bids.length, status: TaskStatus.BIDDING };
+    }));
+  };
+
+  const assignBid = (taskId: string, bidId: string) => {
+    setTasks(prev => prev.map(t => {
+      if (t.id !== taskId) return t;
+      const selected = t.bids.find(b => b.id === bidId);
+      if (!selected) return t;
+      return {
+        ...t,
+        assignedAgentId: selected.agentId,
+        assignedAgentName: selected.agentName,
+        status: TaskStatus.ASSIGNED,
+      };
+    }));
+  };
+
   return (
     <HashRouter>
       <Routes>
         <Route path="/signin" element={<SignIn onSignIn={handleSignIn} mode="signin" />} />
         <Route path="/signup" element={<SignIn onSignIn={handleSignIn} mode="signup" />} />
-        
+
         <Route element={<Layout currentRole={role} onSignOut={handleSignOut} />}>
           <Route path="/" element={<LandingPage tasks={tasks} />} />
           <Route path="/tasks" element={<BrowseTasks tasks={tasks} />} />
-          <Route path="/tasks/:id" element={<TaskDetail tasks={tasks} onUpdateTask={updateTask} />} />
+          <Route
+            path="/tasks/:id"
+            element={<TaskDetail tasks={tasks} onUpdateTask={updateTask} onPlaceBid={placeBid} onAssignBid={assignBid} role={role} currentUserId={currentUserId} />}
+          />
           <Route path="/agents" element={<AgentsMarketplace />} />
           <Route path="/agents/:id" element={<AgentProfile />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
-          
-          <Route 
-            path="/dashboard" 
+
+          <Route
+            path="/dashboard"
             element={
-              role === UserRole.CREATOR ? <CreatorDashboard tasks={tasks} /> :
+              role === UserRole.HUMAN ? <CreatorDashboard tasks={tasks} /> :
               role === UserRole.AGENT ? <AgentDashboard tasks={tasks} /> :
-              role === UserRole.ADMIN ? <AdminDashboard /> :
               <Navigate to="/signin" replace />
-            } 
+            }
           />
-          
+
           <Route path="/review/:id" element={<DeliveryReview tasks={tasks} onUpdateTask={updateTask} />} />
-          <Route path="/create-task" element={role === UserRole.CREATOR ? <CreateTask onAddTask={addTask} /> : <Navigate to="/signin" />} />
+          <Route path="/create-task" element={role === UserRole.HUMAN ? <CreateTask onAddTask={addTask} /> : <Navigate to="/signin" />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,19 +1,16 @@
-
 export enum UserRole {
-  CREATOR = 'creator',
-  AGENT = 'agent',
-  ADMIN = 'admin'
+  HUMAN = 'human',
+  AGENT = 'agent'
 }
 
 export enum TaskStatus {
   OPEN = 'Open',
+  BIDDING = 'Bidding',
   ASSIGNED = 'Assigned',
   IN_PROGRESS = 'In Progress',
-  DELIVERED = 'Delivered',
-  APPROVED = 'Approved',
-  PAID = 'Paid',
-  DISPUTED = 'Disputed',
-  CLOSED = 'Closed'
+  SUBMITTED = 'Submitted',
+  REVISION_REQUESTED = 'Revision Requested',
+  APPROVED = 'Approved'
 }
 
 export enum EscrowStatus {
@@ -35,6 +32,15 @@ export interface Agent {
   capabilities: string[];
   isVerified: boolean;
   handle: string;
+}
+
+export interface Bid {
+  id: string;
+  agentId: string;
+  agentName: string;
+  amount: number;
+  note: string;
+  createdAt: string;
 }
 
 export interface Application {
@@ -62,6 +68,8 @@ export interface Task {
   applicantsCount: number;
   creatorId: string;
   assignedAgentId?: string;
+  assignedAgentName?: string;
+  bids: Bid[];
   tags: string[];
   permissions: string[];
 }

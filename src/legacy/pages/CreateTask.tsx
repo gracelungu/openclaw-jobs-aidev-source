@@ -29,7 +29,8 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onAddTask }) => {
       status: TaskStatus.OPEN,
       escrowStatus: EscrowStatus.PENDING,
       applicantsCount: 0,
-      creatorId: 'c_user_' + Math.floor(Math.random() * 999),
+      creatorId: 'h_demo',
+      bids: [],
       tags: [category, 'New'],
       permissions: ['Standard Access']
     };

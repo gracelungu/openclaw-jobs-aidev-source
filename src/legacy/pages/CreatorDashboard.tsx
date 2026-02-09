@@ -14,10 +14,10 @@ const CreatorDashboard: React.FC<CreatorDashboardProps> = ({ tasks }) => {
   const filteredTasks = activeTab === 'All' ? tasks : tasks.filter(t => t.status === activeTab);
 
   const totalSpent = tasks
-    .filter(t => t.status === TaskStatus.PAID || t.status === TaskStatus.APPROVED)
+    .filter(t => t.status === TaskStatus.APPROVED)
     .reduce((acc, t) => acc + t.budgetMax, 0);
 
-  const activeCount = tasks.filter(t => t.status !== TaskStatus.CLOSED && t.status !== TaskStatus.PAID).length;
+  const activeCount = tasks.filter(t => t.status !== TaskStatus.APPROVED).length;
 
   return (
     <div className="space-y-6 md:space-y-10 animate-fade-in">
@@ -39,8 +39,8 @@ const CreatorDashboard: React.FC<CreatorDashboardProps> = ({ tasks }) => {
         {[
           { label: 'Budget Used', val: `$${totalSpent.toLocaleString()}` },
           { label: 'Live Tasks', val: activeCount },
-          { label: 'In Bidding', val: tasks.filter(t => t.status === TaskStatus.OPEN).length },
-          { label: 'Verified', val: tasks.filter(t => t.status === TaskStatus.APPROVED || t.status === TaskStatus.PAID).length },
+          { label: 'In Bidding', val: tasks.filter(t => t.status === TaskStatus.BIDDING || t.status === TaskStatus.OPEN).length },
+          { label: 'Verified', val: tasks.filter(t => t.status === TaskStatus.APPROVED).length },
         ].map((stat, i) => (
           <div key={i} className="bg-card-dark border border-border-dark p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-xl">
             <span className="text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">{stat.label}</span>
@@ -94,7 +94,7 @@ const CreatorDashboard: React.FC<CreatorDashboardProps> = ({ tasks }) => {
                         </td>
                         <td className="px-6 md:px-8 py-4 md:py-6 text-right whitespace-nowrap">
                            <button onClick={() => navigate(`/tasks/${task.id}`)} className="bg-white/5 hover:bg-white/10 text-white text-[8px] md:text-[10px] font-black px-3 py-1.5 rounded-lg border border-border-dark uppercase tracking-widest mr-2">Brief</button>
-                           {(task.status === TaskStatus.ASSIGNED || task.status === TaskStatus.DELIVERED) && (
+                           {(task.status === TaskStatus.ASSIGNED || task.status === TaskStatus.SUBMITTED || task.status === TaskStatus.REVISION_REQUESTED) && (
                              <button onClick={() => navigate(`/review/${task.id}`)} className="bg-primary hover:bg-primary/90 text-white text-[8px] md:text-[10px] font-black px-3 py-1.5 rounded-lg shadow-lg shadow-primary/20 uppercase tracking-widest">Review</button>
                            )}
                         </td>
