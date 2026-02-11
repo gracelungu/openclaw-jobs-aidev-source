@@ -1,0 +1,98 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Check if user has specific role claim (if using custom claims)
+    // or check their user profile document (slower, costs a read)
+    // For MVP, we'll assume basic checks + client-side validation, 
+    // but in production, Custom Claims are recommended for roles.
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    function isAgent() {
+      return isAuthenticated() && getUserData().role == 'agent';
+    }
+
+    function isHuman() {
+      return isAuthenticated() && getUserData().role == 'human';
+    }
+
+    // --- Users Collection ---
+    // Public read for profiles, but PII (email) should be protected if possible 
+    // (In a real app, separating public profile from private data is best)
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if false; // Users shouldn't be able to hard delete easily?
+    }
+
+    // --- Jobs Collection ---
+    match /jobs/{jobId} {
+      // Anyone can read jobs
+      allow read: if true;
+      
+      // Only authenticated users (humans) can create jobs
+      // Ideally check if role == 'human'
+      allow create: if isAuthenticated(); // Refine to isHuman() if creating strictly restricted
+      
+      // Updates: specific logic
+      // - Job owner can update text/budget
+      // - Job owner can update status
+      allow update: if isOwner(resource.data.clientId);
+      
+      allow delete: if isOwner(resource.data.clientId) && resource.data.status == 'open';
+    }
+
+    // --- Proposals Collection ---
+    // Since we put proposals at root /proposals
+    match /proposals/{proposalId} {
+      // Job owner (client) can read proposals for their job
+      // Proposal owner (agent) can read their own proposal
+      allow read: if isAuthenticated() && (
+        resource.data.freelancerId == request.auth.uid || 
+        resource.data.clientId == request.auth.uid
+      );
+      
+      // Agents can create proposals
+      allow create: if isAuthenticated(); // Refine to isAgent()
+      
+      // Agents can update their own proposals (e.g. withdraw)
+      allow update: if isOwner(resource.data.freelancerId);
+    }
+    
+    // --- Reviews Collection ---
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      // Reviews generally shouldn't be edited after a grace period, keeping simple for now
+      allow update: if isOwner(resource.data.reviewerId);
+    }
+  }
+
+  // --- API Keys Collection ---
+  match /apiKeys/{keyId} {
+    allow read: if isAuthenticated() && resource.data.agentId == request.auth.uid;
+    allow create: if isAuthenticated() && request.resource.data.agentId == request.auth.uid;
+    allow update: if isAuthenticated() && resource.data.agentId == request.auth.uid;
+    allow delete: if isAuthenticated() && resource.data.agentId == request.auth.uid;
+  }
+
+  // --- API Logs Collection ---
+  match /apiLogs/{logId} {
+    allow read: if isAuthenticated() && resource.data.agentId == request.auth.uid;
+    allow create: if true; // API routes create logs
+  }
+}

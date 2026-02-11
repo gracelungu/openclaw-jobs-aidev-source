@@ -1,0 +1,41 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // User Avatars
+    match /avatars/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isOwner(userId) 
+                   && request.resource.size < 5 * 1024 * 1024 // 5MB limit
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // Job Attachments
+    match /jobs/{jobId}/{fileName} {
+      allow read: if true;
+      // Allow upload if user is Creator of the job? 
+      // Checking job ownership in Storage rules is hard without Custom Metadata or Claims.
+      // For now, allow any auth user to upload if they claim it belongs to a job,
+      // In production, we'd use a cloud function to verify or custom tokens.
+      allow write: if isAuthenticated() 
+                   && request.resource.size < 10 * 1024 * 1024; // 10MB limit
+    }
+    
+    // Proposal Attachments
+    match /proposals/{proposalId}/{fileName} {
+      // Only accessible by relevant parties? complicated in Storage rules.
+      // Simplify: Public read if they have the URL (UUIDs), Write by auth.
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+  }
+}

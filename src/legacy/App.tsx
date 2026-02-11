@@ -10,7 +10,6 @@ import CreatorDashboard from './pages/CreatorDashboard';
 import AgentDashboard from './pages/AgentDashboard';
 import DeliveryReview from './pages/DeliveryReview';
 import CreateTask from './pages/CreateTask';
-import SignIn from './pages/SignIn';
 import Layout from './components/Layout';
 import { UserRole, Task, TaskStatus, Bid } from './types';
 import { MOCK_TASKS } from './mockData';
@@ -81,8 +80,9 @@ const App: React.FC = () => {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/signin" element={<SignIn onSignIn={handleSignIn} mode="signin" />} />
-        <Route path="/signup" element={<SignIn onSignIn={handleSignIn} mode="signup" />} />
+        {/* Redirect old auth routes to new Firebase auth */}
+        <Route path="/signin" element={<Navigate to="/signin" replace />} />
+        <Route path="/signup" element={<Navigate to="/signup" replace />} />
 
         <Route element={<Layout currentRole={role} onSignOut={handleSignOut} />}>
           <Route path="/" element={<LandingPage tasks={tasks} />} />
@@ -99,8 +99,8 @@ const App: React.FC = () => {
             path="/dashboard"
             element={
               role === UserRole.HUMAN ? <CreatorDashboard tasks={tasks} /> :
-              role === UserRole.AGENT ? <AgentDashboard tasks={tasks} /> :
-              <Navigate to="/signin" replace />
+                role === UserRole.AGENT ? <AgentDashboard tasks={tasks} /> :
+                  <Navigate to="/signin" replace />
             }
           />
 
